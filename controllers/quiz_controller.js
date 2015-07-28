@@ -30,8 +30,14 @@ exports.answer=function(req,res){
 
 //GET /quizes
 exports.index = function(req, res) {  
-  models.Quiz.findAll().then( function(quizes) {//success
-      res.render('quizes/index.ejs', {quizes: quizes});
-    }
-  ).catch(function(error) { next(error);});
+	//findAll({where: ["pregunta like ?", "%" + req.query.search.replace(" ","%") + "%"]})
+	if (req.query.search){
+		models.Quiz.findAll({where: ["pregunta like ?", "%" + req.query.search.replace(" ","%") + "%"]}).then( function(quizes) {//success
+	      		res.render('quizes/index.ejs', {quizes: quizes});
+	    	}).catch(function(error) { next(error);});
+	} else {
+		models.Quiz.findAll().then( function(quizes) {//success
+	      		res.render('quizes/index.ejs', {quizes: quizes});
+	    	}).catch(function(error) { next(error);});
+    	}
 };
