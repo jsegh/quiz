@@ -5,7 +5,7 @@ exports.load = function(req, res, next, quizId) {
   models.Quiz.find(//quizId
   	{
   		where: {id: Number(quizId)},
-  		include: [{model: models.comment}]
+  		include: [{model: models.Comment}]
   	}
   )  
   .then(function(quiz) {
