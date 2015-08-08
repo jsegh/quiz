@@ -1,7 +1,21 @@
 // MW de autorización de accesos HTTP restringidos
 exports.loginRequired = function(req, res, next){
+
+	var d = new Date();
+	var n = d.getTime(); 
+	
     if (req.session.user) {
-        next();
+    	
+    	//caducada?
+    	if (req.session.sessionTime && n - req.session.sessionTime > 30000){
+    		delete req.session.user;
+		req.session.errors = [{"message": 'Sesion caducada'}];
+		req.session.redir = "/";
+            	res.redirect("/login");  
+    	} else {
+    		req.session.sessionTime = new Date().getTime();
+    		next();
+    	}
     } else {
         res.redirect('/login');
     }
@@ -34,7 +48,7 @@ exports.create = function(req, res) {
         // Crear req.session.user y guardar campos   id  y  username
         // La sesión se define por la existencia de:    req.session.user
         req.session.user = {id:user.id, username:user.username, isAdmin:user.isAdmin};
-
+	req.session.sessionTime = new Date().getTime();
         res.redirect(req.session.redir.toString());// redirección a path anterior a login
     });
 };
