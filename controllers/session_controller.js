@@ -1,11 +1,13 @@
 // MW de autorización de accesos HTTP restringidos
 exports.loginRequired = function(req, res, next){
 
-	var d = new Date();
-	var n = d.getTime(); 
+
+	//var d = new Date();
+	//var n = d.getTime(); 
 	
     if (req.session.user) {
-    	
+    	next();
+    	/*
     	//caducada?
     	if (req.session.sessionTime && n - req.session.sessionTime > 30000){
     		delete req.session.user;
@@ -16,6 +18,7 @@ exports.loginRequired = function(req, res, next){
     		req.session.sessionTime = new Date().getTime();
     		next();
     	}
+    	*/
     } else {
         res.redirect('/login');
     }

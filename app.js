@@ -28,8 +28,32 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Helpers dinamicos:
-app.use(function(req, res, next) {
 
+//control de autologout
+app.use(function(req, res, next) {
+	var d = new Date();
+	var n = d.getTime(); 
+	if (req.session.user) {
+		
+		  // Hacer visible req.session en las vistas
+  res.locals.session = req.session;
+		
+	    	//caducada?
+	    	if (req.session.sessionTime && n - req.session.sessionTime > 30000){
+	    		delete req.session.user;
+	    		req.session.redir = "/";
+	    		res.render('sessions/new', {errors: [{"message": "Sesion caducada"}]});
+		}
+		else {
+    			req.session.sessionTime = new Date().getTime();
+    			next();
+    		}
+	}else{
+		next();
+	}
+});
+
+app.use(function(req, res, next) {
   // si no existe lo inicializa
   if (!req.session.redir) {
     req.session.redir = '/';
@@ -52,6 +76,8 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
+
+
 
 // error handlers
 
